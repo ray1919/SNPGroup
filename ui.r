@@ -3,7 +3,7 @@ fluidPage(
   useShinyjs(),
   titlePanel("Format SNP Group file from dbSNP ID"),
   tags$code("Author: Zhao Rui"),
-  tags$code("Last update: 2018-02-02"),
+  tags$code("Last update: 2018-05-03"),
   tags$link(rel = 'stylesheet', type = 'text/css', href = 'style.css'),
   tags$head(tags$script(src="jquery.highlight-5.js")),
   fluidRow(
@@ -17,6 +17,7 @@ fluidPage(
       actionButton("highlight", "Highlight common SNP"),
       downloadButton('downloadData', 'Download SNP Group File'),
       downloadButton('downloadCsv', 'Download Nearby(30nt) SNP Freqs'),
+      downloadButton('downloadBed', 'Download merged SNP BED file'),
       helpText("将已知dbSNP编号的SNP位点转为MassArray输入需要的SNP Group格式。
                dbSNP编号用换行分隔，需要加rs前缀。
                常见SNP（MAF>1%）的碱基默认标记为小写字母，亦可标记为简并碱基或n。")

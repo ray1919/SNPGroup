@@ -79,6 +79,7 @@ function(input, output) {
     FLANK_LEN <- input$FLANK_LEN
     rv$DBVER <- input$dbsnp
     rv$FORMAT <- input$format
+    bed_df <- data.frame()
     con <- dbConnect(RMySQL::MySQL(), user = 'ucsc',
                      password='ucsc', host='localhost',db='ucsc_hg38')
     
@@ -166,10 +167,30 @@ function(input, output) {
             rv$snp_tbl <- rbind(rv$snp_tbl, data.frame(SNP_ID = name, Strand = res$strand[1],
                                                  Class= res$class[1], Sequence = seq))
           }
+          
+          # prepare bed position info, start position is 0-based
+          bed_df <- rbind(bed_df, data.frame(chrom=res$chrom[1], start=res$chromStart - FLANK_LEN, end=res$chromEnd[1] + FLANK_LEN, strand="+", name=name))
+          
           incProgress(1/length(rs), name)
         }
       })
     dbDisconnect(con)
+    
+    # the GRanges start position is 0-based
+    grsnp <- as(bed_df, "GRanges")
+    
+    grred <- reduce(grsnp) # 0-based position
+    
+    ol <- findOverlaps(grred, grsnp) %>% as.data.frame()
+    
+    name <- c()
+    for (i in 1:length(grred)) {
+      name[i] <- paste(grsnp$name[ol$subjectHits[ol$queryHits==i]], collapse = " ")
+    }
+    
+    grred$name <- name
+    df <- as.data.frame(grred)
+    rv$bed_tbl <- df[,c(1:3,6)]
     
     output$tbl <- renderTable({rv$snp_tbl})
     output$text <- renderPrint(paste("Total", length(rs), "successfully processed."))
@@ -194,6 +215,14 @@ function(input, output) {
     },
     content = function(file) {
       write.csv(filter(rv$relPos, abs(relPos) < 31), file, quote = T, row.names = F, col.names = T, sep = ",")
+    }
+  )
+  output$downloadBed <- downloadHandler(
+    filename = function() { 
+      paste(Sys.Date(), '.bed', sep='') 
+    },
+    content = function(file) {
+      write.table(rv$bed_tbl, file, quote = F, row.names = F, col.names = F, sep = "\t")
     }
   )
 }
