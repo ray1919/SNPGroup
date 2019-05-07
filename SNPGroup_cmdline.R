@@ -10,7 +10,7 @@ library(Biostrings)
 # command line version
 
 rv <- list()
-rv$DBVER <- "147"
+rv$DBVER <- "150"
 rv$FORMAT <- "Lower Case" # c("IUPAC", "Lower Case", "n")
 rv$FLANK_LEN <- 200 # 上下游获取长度
 rv$dbuser <- "ucsc"

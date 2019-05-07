@@ -9,7 +9,7 @@ fluidPage(
   fluidRow(
     column(3, wellPanel(
       selectInput('format', 'Common SNP Mask:', choices = c("IUPAC", "Lower Case", "n"), selected = "Lower Case"),
-      selectInput('dbsnp', 'Common dbSNP DB:', choices = c("147", "150"), selected = "150"),
+      selectInput('dbsnp', 'Common dbSNP DB:', choices = c("151"), selected = "151"),
       sliderInput("FLANK_LEN", "FLANK LENGTH:",
                   min = 50, max = 300, value = 200, step= 10),
       textAreaInput("rstext", "dnSNP rs #", "", resize = "vertical"),
